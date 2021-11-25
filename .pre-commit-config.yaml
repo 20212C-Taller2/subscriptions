@@ -1,0 +1,14 @@
+repos:
+-   repo: https://github.com/pycqa/flake8
+    rev: '3.9.2'  # pick a git hash / tag to point to
+    hooks:
+    -   id: flake8
+        exclude: alembic/
+-   repo: local
+    hooks:
+      - id: pytest-check
+        name: pytest-check
+        entry: pytest
+        language: system
+        pass_filenames: false
+        always_run: true
