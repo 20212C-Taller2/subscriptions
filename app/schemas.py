@@ -3,7 +3,6 @@ Estos son los "modelos" de pydantic que son usados por la api para validar
 campos
 """
 
-from typing import List
 
 from pydantic import BaseModel
 
@@ -11,7 +10,7 @@ from pydantic import BaseModel
 class Subscription(BaseModel):
     code: str
     description: str
-    accesses: List['Subscription'] = []
+    # accesses: List['Subscription'] = []
 
     class Config:
         orm_mode = True
