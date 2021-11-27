@@ -28,3 +28,12 @@ class Subscription(BaseModelDb):
         secondary=subscription_accesses,
         primaryjoin=code == subscription_accesses.c.subscription_parent_code,
         secondaryjoin=code == subscription_accesses.c.subscription_accessed_code)
+
+
+class Course(BaseModelDb):
+    __tablename__ = "course"
+
+    course_id = Column(String, primary_key=True, index=True)
+    owner_id = Column(String, nullable=False)
+    subscription_code = Column(String, ForeignKey("subscription.code"), nullable=False)
+    subscription = relationship("Subscription")

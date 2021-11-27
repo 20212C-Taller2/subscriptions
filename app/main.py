@@ -1,13 +1,10 @@
 from fastapi import FastAPI
 
-from app.db import models
-from app.db.database import engine
-from app.routers import subscriptions
-
-models.BaseModelDb.metadata.create_all(bind=engine)  # Replace with alembic
+from app.routers import subscriptions, courses
 
 app = FastAPI()
 app.include_router(subscriptions.router)
+app.include_router(courses.router)
 
 
 @app.get("/")

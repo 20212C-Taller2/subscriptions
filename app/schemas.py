@@ -17,3 +17,12 @@ class Subscription(BaseModel):
 
 
 Subscription.update_forward_refs()
+
+
+class Course(BaseModel):
+    course_id: str
+    owner_id: str
+    subscription_code: str
+
+    class Config:
+        orm_mode = True
