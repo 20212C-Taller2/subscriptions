@@ -2,13 +2,29 @@
 Modelos para el ORM de la base de datos
 """
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, String, ForeignKey, Table
+from sqlalchemy.orm import relationship
+
 from app.db.database import BaseModelDb
+
+subscription_accesses = Table('subscription_accesses', BaseModelDb.metadata,
+                              Column('subscription_parent_code',
+                                     ForeignKey('subscription.code'),
+                                     primary_key=True),
+                              Column('subscription_accessed_code',
+                                     ForeignKey('subscription.code'),
+                                     primary_key=True)
+                              )
 
 
 class Subscription(BaseModelDb):
     __tablename__ = "subscription"
 
-    id = Column(Integer, primary_key=True, index=True)
-    code = Column(String, unique=True, index=True, nullable=False)
+    code = Column(String, primary_key=True, index=True)
     description = Column(String, nullable=False)
+
+    accesses = relationship(
+        "Subscription",
+        secondary=subscription_accesses,
+        primaryjoin=code == subscription_accesses.c.subscription_parent_code,
+        secondaryjoin=code == subscription_accesses.c.subscription_accessed_code)

@@ -3,16 +3,18 @@ Estos son los "modelos" de pydantic que son usados por la api para validar
 campos
 """
 
+from typing import List
+
 from pydantic import BaseModel
 
 
-class SubscriptionBase(BaseModel):
+class Subscription(BaseModel):
     code: str
     description: str
-
-
-class Subscription(SubscriptionBase):
-    id: int
+    accesses: List['Subscription'] = []
 
     class Config:
         orm_mode = True
+
+
+Subscription.update_forward_refs()
