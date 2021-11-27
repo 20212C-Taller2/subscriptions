@@ -14,7 +14,15 @@ def check_current_head(alembic_cfg, connectable):
 
 
 def test_db():
-    SQLALCHEMY_DATABASE_URL = os.environ['FASTAPI_POSTGRESQL']
+    def get_url():
+        if os.environ.get("DATABASE_URL") is not None:
+            uri = os.getenv("DATABASE_URL")  # or other relevant config var
+            if uri and uri.startswith("postgres://"):
+                uri = uri.replace("postgres://", "postgresql://", 1)
+                return uri
+        return os.environ["FASTAPI_POSTGRESQL"]
+
+    SQLALCHEMY_DATABASE_URL = get_url()
 
     e = create_engine(
         SQLALCHEMY_DATABASE_URL

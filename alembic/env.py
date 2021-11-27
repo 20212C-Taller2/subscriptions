@@ -27,6 +27,11 @@ target_metadata = BaseModelDb.metadata
 # ... etc.
 
 def get_url():
+    if os.environ.get("DATABASE_URL") is not None:
+        uri = os.getenv("DATABASE_URL")  # or other relevant config var
+        if uri and uri.startswith("postgres://"):
+            uri = uri.replace("postgres://", "postgresql://", 1)
+            return uri
     return os.environ["FASTAPI_POSTGRESQL"]
 
 
