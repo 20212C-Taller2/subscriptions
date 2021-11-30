@@ -4,20 +4,9 @@ from app.main import app
 
 client = TestClient(app)
 
-expected_subscriptions = [
-    {
-        "code": "FREE",
-        "description": "Free Subscription"
-    },
-    {
-        "code": "BASIC",
-        "description": "Basic Subscription"
-    },
-    {
-        "code": "FULL",
-        "description": "Full Subscription"
-    }
-]
+expected_subscriptions = [{"code": "BASIC", "description": "Basic Subscription", "price": 10.0, "course_limit": 5},
+                          {"code": "FREE", "description": "Free Subscription", "price": 0.0, "course_limit": 3},
+                          {"code": "FULL", "description": "Full Subscription", "price": 20.0, "course_limit": 7}]
 
 
 def test_get_subscriptions():

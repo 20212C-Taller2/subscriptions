@@ -2,7 +2,7 @@
 Modelos para el ORM de la base de datos
 """
 
-from sqlalchemy import Column, String, ForeignKey, Table
+from sqlalchemy import Column, String, ForeignKey, Table, Integer, Numeric
 from sqlalchemy.orm import relationship
 
 from app.db.database import BaseModelDb
@@ -22,6 +22,8 @@ class Subscription(BaseModelDb):
 
     code = Column(String, primary_key=True, index=True)
     description = Column(String, nullable=False)
+    price = Column(Numeric(precision=9, scale=2), nullable=False)
+    course_limit = Column(Integer, nullable=False)
 
     accesses = relationship(
         "Subscription",

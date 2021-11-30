@@ -2,7 +2,7 @@
 Estos son los "modelos" de pydantic que son usados por la api para validar
 campos
 """
-
+import decimal
 
 from pydantic import BaseModel
 
@@ -11,6 +11,8 @@ class Subscription(BaseModel):
     code: str
     description: str
     # accesses: List['Subscription'] = []
+    price: decimal.Decimal
+    course_limit: int
 
     class Config:
         orm_mode = True
