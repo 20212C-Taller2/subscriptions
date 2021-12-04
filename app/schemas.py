@@ -28,3 +28,17 @@ class Course(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SubscriberCreate(BaseModel):
+    subscriber_id: str
+
+    class Config:
+        orm_mode = True
+
+
+class Subscriber(SubscriberCreate):
+    wallet_id: str
+
+    class Config:
+        orm_mode = True

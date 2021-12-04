@@ -2,7 +2,7 @@
 Modelos para el ORM de la base de datos
 """
 
-from sqlalchemy import Column, String, ForeignKey, Table, Integer, Numeric
+from sqlalchemy import Column, String, ForeignKey, Table, Integer, Numeric, Date
 from sqlalchemy.orm import relationship
 
 from app.db.database import BaseModelDb
@@ -38,4 +38,26 @@ class Course(BaseModelDb):
     course_id = Column(String, primary_key=True, index=True)
     owner_id = Column(String, nullable=False)
     subscription_code = Column(String, ForeignKey("subscription.code"), nullable=False)
+    subscription = relationship("Subscription")
+
+
+class Subscriber(BaseModelDb):
+    __tablename__ = "subscriber"
+
+    subscriber_id = Column(String, primary_key=True, index=True)
+    wallet_id = Column(String, nullable=False)
+
+    subscriptions = relationship("SubscriberSuscription", cascade="all, delete")
+
+
+class SubscriberSuscription(BaseModelDb):
+    __tablename__ = "subscriber_suscription"
+
+    id = Column(Integer, primary_key=True)
+    subscriber_id = Column(ForeignKey("subscriber.subscriber_id"), nullable=False)
+    subscription_code = Column(ForeignKey("subscription.code"), nullable=False)
+    created_date = Column(Date, nullable=False)
+    courses_limit = Column(Integer, nullable=False)
+    courses_used = Column(Integer, nullable=False, default=0)
+
     subscription = relationship("Subscription")
