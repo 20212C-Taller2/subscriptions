@@ -45,9 +45,9 @@ def get_subscriber(db: Session, subscriber_id: str):
 
 def add_subscription(db: Session, subscriber: models.Subscriber, subscription: models.Subscription):
     db_subscriber_subscription = models.SubscriberSuscription(created_date=datetime.now(),
-                                                              course_limit=subscription.course_limit)
+                                                              courses_limit=subscription.course_limit)
     db_subscriber_subscription.subscription = subscription
-    subscriber.suscriptions.append(db_subscriber_subscription)
+    subscriber.subscriptions.append(db_subscriber_subscription)
     db.commit()
-    db.refresh(db_subscriber_subscription)
-    return db_subscriber_subscription
+    db.refresh(subscriber)
+    return subscriber

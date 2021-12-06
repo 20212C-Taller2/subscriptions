@@ -28,7 +28,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('subscriber_id', sa.String(), nullable=False),
     sa.Column('subscription_code', sa.String(), nullable=False),
-    sa.Column('created_date', sa.Date(), nullable=False),
+    sa.Column('created_date', sa.DateTime(), nullable=False),
     sa.Column('courses_limit', sa.Integer(), nullable=False),
     sa.Column('courses_used', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['subscriber_id'], ['subscriber.subscriber_id'], ),

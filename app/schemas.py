@@ -3,6 +3,7 @@ Estos son los "modelos" de pydantic que son usados por la api para validar
 campos
 """
 import decimal
+from typing import List
 
 from pydantic import BaseModel
 
@@ -30,6 +31,21 @@ class Course(BaseModel):
         orm_mode = True
 
 
+class SubscriberSubscriptionCreate(BaseModel):
+    subscription_code: str
+
+    class Config:
+        orm_mode = True
+
+
+class SubscriberSubscription(SubscriberSubscriptionCreate):
+    courses_limit: int
+    courses_used: int
+
+    class Config:
+        orm_mode = True
+
+
 class SubscriberCreate(BaseModel):
     subscriber_id: str
 
@@ -39,6 +55,8 @@ class SubscriberCreate(BaseModel):
 
 class Subscriber(SubscriberCreate):
     wallet_id: str
+    balance: decimal.Decimal
+    subscriptions: List[SubscriberSubscription] = []
 
     class Config:
         orm_mode = True
