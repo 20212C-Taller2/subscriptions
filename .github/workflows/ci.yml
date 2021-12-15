@@ -11,6 +11,7 @@ jobs:
       DATABASE_USER: postgres
       DATABASE_PASS: password
       DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
+      FASTAPI_POSTGRESQL: postgresql://postgres:password@localhost:5432/postgres
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -31,10 +32,10 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
