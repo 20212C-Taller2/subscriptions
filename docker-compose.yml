@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  subscriptions_db:
+    container_name: subscriptions_db
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: example
+    networks:
+      - backend
+    ports:
+      - "6432:5432"
+
+  web:
+    container_name: subscriptions_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --reload --host 0.0.0.0
+    volumes:
+      - .:/app
+    ports:
+      - "8009:8000"
+    environment:
+      DATABASE_URL: "postgres://postgres:example@subscriptions_db:5432/postgres"
+    depends_on:
+      - subscriptions_db
+    networks:
+      - backend
+
+
+networks:
+  backend:
+    driver: bridge
