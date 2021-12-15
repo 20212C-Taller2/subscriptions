@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from app import schemas
 from app.db import crud
 from app.dependencies import get_db
-from ..services import walletService
+from ..schemas import Subscriber
+from ..services import walletService, subscriptionService
 
 router = APIRouter(
     prefix="/subscribers",
@@ -35,7 +36,8 @@ def get_subscriber(subscriber_id: str, db: Session = Depends(get_db)):
     if not db_subscriber:
         raise HTTPException(status_code=404)
 
-    return db_subscriber
+    subscriber_schema = Subscriber(**db_subscriber.__dict__)
+    return subscriptionService.group_subscriptions(subscriber_schema)
 
 
 @router.post("/{subscriber_id}/subscription", response_model=schemas.Subscriber)
@@ -50,4 +52,6 @@ def add_subscription(subscriber_id: str,
     if not db_subscription:
         raise HTTPException(status_code=404, detail="Subscription not found")
 
-    return crud.add_subscription(db, db_subscriber, db_subscription)
+    crud.add_subscription(db, db_subscriber, db_subscription)
+    db.refresh(db_subscriber)
+    return subscriptionService.group_subscriptions(db_subscriber)

@@ -48,7 +48,7 @@ class Subscriber(BaseModelDb):
     wallet_id = Column(String, nullable=False)
     balance = Column(Numeric, nullable=False, default=0)
 
-    subscriptions = relationship("SubscriberSuscription", cascade="all, delete")
+    subscriptions = relationship("SubscriberSuscription", cascade="all, delete", lazy="joined")
 
 
 class SubscriberSuscription(BaseModelDb):
