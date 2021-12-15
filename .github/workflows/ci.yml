@@ -6,7 +6,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_COURSES_TOKEN }}
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_SUBSCRIPTIONS_TOKEN }}
       COV_OUTFILE: coverage.xml
       DATABASE_USER: postgres
       DATABASE_PASS: password
