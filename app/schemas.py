@@ -55,7 +55,7 @@ class SubscriberCreate(BaseModel):
 
 class Subscriber(SubscriberCreate):
     wallet_id: str
-    balance: decimal.Decimal
+    balance: decimal.Decimal = 0
     subscriptions: List[SubscriberSubscription] = []
 
     class Config:
