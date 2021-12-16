@@ -53,10 +53,17 @@ class SubscriberCreate(BaseModel):
         orm_mode = True
 
 
-class Subscriber(SubscriberCreate):
-    wallet_id: str
+class SubscriberReturn(SubscriberCreate):
+    address: str
     balance: decimal.Decimal = 0
     subscriptions: List[SubscriberSubscription] = []
+
+    class Config:
+        orm_mode = True
+
+
+class Subscriber(SubscriberReturn):
+    wallet_id: str
 
     class Config:
         orm_mode = True

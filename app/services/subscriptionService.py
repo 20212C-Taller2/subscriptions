@@ -3,7 +3,7 @@ import itertools
 from .. import schemas
 
 
-def group_subscriptions(subscriber: schemas.Subscriber) -> schemas.Subscriber:
+def group_subscriptions(subscriber: schemas.SubscriberReturn) -> schemas.SubscriberReturn:
     """
     Simplifies subscriptions list returned one grouped subscription code with the totals courses limits
     """
@@ -24,4 +24,4 @@ def group_subscriptions(subscriber: schemas.Subscriber) -> schemas.Subscriber:
 
     return_subscriber = subscriber.dict()
     return_subscriber["subscriptions"] = subscriptions
-    return schemas.Subscriber(**return_subscriber)
+    return schemas.SubscriberReturn(**return_subscriber)

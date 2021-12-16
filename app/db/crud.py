@@ -32,7 +32,8 @@ def get_course(db: Session, course_id: str):
 
 def create_subscriber(db: Session, subscriber: schemas.Subscriber):
     db_subscriber = models.Subscriber(subscriber_id=subscriber.subscriber_id,
-                                      wallet_id=subscriber.wallet_id)
+                                      wallet_id=subscriber.wallet_id,
+                                      address=subscriber.address)
     db.add(db_subscriber)
     db.commit()
     db.refresh(db_subscriber)
