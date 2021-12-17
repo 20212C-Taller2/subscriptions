@@ -1,17 +1,16 @@
 import json
-import random
-import string
+from decimal import Decimal
 
 from web3 import Web3
 
-from ..constants import WEB3_INFURA_PROJECT_ID, CONTRACT_DIR
+from ..constants import WEB3_INFURA_PROJECT_ID, CONTRACT_DIR, EthTxProcessResult
 
 
 class WalletService:
 
     @staticmethod
     def _get_infura_w3():
-        url = f'https://mainnet.infura.io/v3/{WEB3_INFURA_PROJECT_ID}'
+        url = f'https://kovan.infura.io/v3/{WEB3_INFURA_PROJECT_ID}'
         w3 = Web3(Web3.HTTPProvider(url))
         return w3
 
@@ -34,7 +33,21 @@ class WalletService:
             "address": wallet.address
         }
 
+    def deposit(self, addr: str, priv_key: str, amount: Decimal):
+        tx = self._co.functions.deposit().buildTransaction({
+            "value": self._w3.toWei(str(amount), 'ether'),
+            "nonce": self._w3.eth.getTransactionCount(addr),
+            "from": addr})
 
-def create_wallet():
-    # TODO Integrate with wallet
-    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
+        signed_tx = self._w3.eth.account.sign_transaction(tx, priv_key)
+        tx_hash = self._w3.eth.sendRawTransaction(signed_tx.rawTransaction)
+
+        if tx_hash is not None:
+            tx_rcpt = self._w3.eth.waitForTransactionReceipt(tx_hash, timeout=2)
+            res = self._co.events.DepositMade().processReceipt(tx_rcpt)
+            if len(res) > 0 and res[0].event == "DepositMade":
+                return EthTxProcessResult.OK
+            else:
+                return EthTxProcessResult.ERROR
+        else:
+            raise ValueError("tx_hash not returned by eth api call")
