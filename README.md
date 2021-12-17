@@ -17,12 +17,12 @@ alembic upgrade head
 ```
 
 ## DB migrations
-Antes de iniciar el server de desarrollorealizar las migraciones pendientes con `alembic upgrade head`.
+Antes de iniciar el server de desarrollo realizar las migraciones pendientes con `alembic upgrade head`.
 
 Si se quiere crear una nueva revision usar `alembic revision --autogenerate -m "some message"`. Luego validar que el 
 archivo generado satisfaga correctamente los cambios realizados
 
-## Ejecucion
+## Ejecución
 Iniciar el server con:
 ```shell
 vunicorn app.main:app
@@ -31,3 +31,16 @@ vunicorn app.main:app
 vunicorn app.main:app --reload
 ```
 
+## Linter
+
+```shell
+flake8
+```
+## Ejecución tests
+
+- Unitarios:`$ python -m pytest tests`
+
+### Cobertura 
+
+- Reporte: `$ coverage run -m pytest test/ && coverage report -m`
+- HTML: `$ coverage html`
