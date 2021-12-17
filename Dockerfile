@@ -10,5 +10,6 @@ COPY ./alembic /code/alembic
 COPY ./app /code/app
 COPY ./test /code/test
 COPY .coveragerc .flake8 /code/
+COPY ./contracts /code/contracts
 
 CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT

@@ -22,7 +22,7 @@ class Subscription(BaseModelDb):
 
     code = Column(String, primary_key=True, index=True)
     description = Column(String, nullable=False)
-    price = Column(Numeric(precision=9, scale=2), nullable=False)
+    price = Column(Numeric(precision=21, scale=18), nullable=False)
     course_limit = Column(Integer, nullable=False)
 
     accesses = relationship(

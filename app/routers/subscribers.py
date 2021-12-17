@@ -55,4 +55,4 @@ def add_subscription(subscriber_id: str,
 
     crud.add_subscription(db, db_subscriber, db_subscription)
     db.refresh(db_subscriber)
-    return subscriptionService.group_subscriptions(db_subscriber)
+    return subscriptionService.group_subscriptions(schemas.SubscriberReturn(**db_subscriber.__dict__))
