@@ -43,7 +43,7 @@ class WalletService:
         tx_hash = self._w3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
         if tx_hash is not None:
-            tx_rcpt = self._w3.eth.waitForTransactionReceipt(tx_hash, timeout=2)
+            tx_rcpt = self._w3.eth.waitForTransactionReceipt(tx_hash, timeout=30)
             res = self._co.events.DepositMade().processReceipt(tx_rcpt)
             if len(res) > 0 and res[0].event == "DepositMade":
                 return EthTxProcessResult.OK

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app import schemas
 from app.db import crud
 from app.dependencies import get_db
+from ..constants import EthTxProcessResult
 from ..schemas import SubscriberReturn
 from ..services import walletService, subscriptionService
 
@@ -52,6 +53,15 @@ def add_subscription(subscriber_id: str,
     db_subscription = crud.get_subscription(db, subscription_code=subscription.subscription_code)
     if not db_subscription:
         raise HTTPException(status_code=404, detail="Subscription not found")
+
+    try:
+        deposit_result = wallet_service.deposit(db_subscriber.address,
+                                                db_subscriber.wallet_id,
+                                                db_subscription.price)
+        if deposit_result == EthTxProcessResult.ERROR:
+            raise HTTPException(status_code=422, detail="Unable to process payment")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing payment: {e}")
 
     crud.add_subscription(db, db_subscriber, db_subscription)
     db.refresh(db_subscriber)
