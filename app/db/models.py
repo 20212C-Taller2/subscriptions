@@ -36,7 +36,7 @@ class Course(BaseModelDb):
     __tablename__ = "course"
 
     course_id = Column(String, primary_key=True, index=True)
-    owner_id = Column(String, nullable=False)
+    owner_id = Column(String, ForeignKey("subscriber.subscriber_id"), nullable=False)
     subscription_code = Column(String, ForeignKey("subscription.code"), nullable=False)
     subscription = relationship("Subscription")
 
