@@ -66,4 +66,6 @@ def add_subscription(subscriber_id: str,
 
     crud.add_subscription(db, db_subscriber, db_subscription)
     db.refresh(db_subscriber)
-    return subscriptionService.group_subscriptions(schemas.SubscriberReturn(**db_subscriber.__dict__))
+    subscriber_return = schemas.SubscriberReturn(**db_subscriber.__dict__)
+    subscriber_return.balance = wallet_service.get_balance(subscriber_return.address)
+    return subscriptionService.group_subscriptions(subscriber_return)

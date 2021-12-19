@@ -47,7 +47,6 @@ class Subscriber(BaseModelDb):
     subscriber_id = Column(String, primary_key=True, index=True)
     wallet_id = Column(String, nullable=False)
     address = Column(String, nullable=False)
-    balance = Column(Numeric, nullable=False, default=0)
 
     subscriptions = relationship("SubscriberSuscription", cascade="all, delete", lazy="joined")
 

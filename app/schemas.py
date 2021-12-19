@@ -11,7 +11,6 @@ from pydantic import BaseModel
 class Subscription(BaseModel):
     code: str
     description: str
-    # accesses: List['Subscription'] = []
     price: decimal.Decimal
     course_limit: int
 
