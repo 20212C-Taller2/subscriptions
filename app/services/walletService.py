@@ -33,6 +33,9 @@ class WalletService:
             "address": wallet.address
         }
 
+    def get_balance(self, addr: str):
+        return Web3.fromWei(self._w3.eth.get_balance(addr), 'ether')
+
     def deposit(self, addr: str, priv_key: str, amount: Decimal):
         tx = self._co.functions.deposit().buildTransaction({
             "value": self._w3.toWei(str(amount), 'ether'),

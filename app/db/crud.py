@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 
 from . import models
-from .. import schemas
+from .. import schemas, constants
 
 
 def get_subscriptions(db: Session, skip: int = 0, limit: int = 100):
@@ -45,8 +45,13 @@ def get_subscriber(db: Session, subscriber_id: str):
 
 
 def add_subscription(db: Session, subscriber: models.Subscriber, subscription: models.Subscription):
+    created_Date = datetime.now()
     db_subscriber_subscription = models.SubscriberSuscription(created_date=datetime.now(),
-                                                              courses_limit=subscription.course_limit)
+                                                              courses_limit=subscription.course_limit,
+                                                              price=subscription.price,
+                                                              payment_status=constants.PaymentStatus.PAYMENT_PENDING,
+                                                              payment_due_date=created_Date + timedelta(
+                                                                  days=constants.DAYS_TO_REMORSE))
     db_subscriber_subscription.subscription = subscription
     subscriber.subscriptions.append(db_subscriber_subscription)
     db.commit()

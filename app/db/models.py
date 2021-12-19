@@ -2,10 +2,10 @@
 Modelos para el ORM de la base de datos
 """
 
-from sqlalchemy import Column, String, ForeignKey, Table, Integer, Numeric, DateTime
+from sqlalchemy import Column, String, ForeignKey, Table, Integer, Numeric, DateTime, CheckConstraint
 from sqlalchemy.orm import relationship
 
-from app.db.database import BaseModelDb
+from .database import BaseModelDb
 
 subscription_accesses = Table('subscription_accesses', BaseModelDb.metadata,
                               Column('subscription_parent_code',
@@ -54,6 +54,9 @@ class Subscriber(BaseModelDb):
 
 class SubscriberSuscription(BaseModelDb):
     __tablename__ = "subscriber_suscription"
+    __table_args__ = (
+        CheckConstraint('payment_due_date > created_date', name='subscriber_suscription_payment_due_date_check'),
+    )
 
     id = Column(Integer, primary_key=True)
     subscriber_id = Column(ForeignKey("subscriber.subscriber_id"), nullable=False)
@@ -61,5 +64,10 @@ class SubscriberSuscription(BaseModelDb):
     created_date = Column(DateTime, nullable=False)
     courses_limit = Column(Integer, nullable=False)
     courses_used = Column(Integer, nullable=False, default=0)
+    payment_status = Column(String,
+                            nullable=True,
+                            default="PENDING")
+    price = Column(Numeric(precision=21, scale=18), nullable=True, default=0)
+    payment_due_date = Column(DateTime, nullable=True)
 
     subscription = relationship("Subscription")

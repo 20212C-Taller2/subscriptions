@@ -39,6 +39,7 @@ def get_subscriber(subscriber_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404)
 
     subscriber_schema = SubscriberReturn(**db_subscriber.__dict__)
+    subscriber_schema.balance = wallet_service.get_balance(subscriber_schema.address)
     return subscriptionService.group_subscriptions(subscriber_schema)
 
 
