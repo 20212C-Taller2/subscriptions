@@ -39,14 +39,14 @@ class WalletService:
     def deposit(self, addr: str, priv_key: str, amount: Decimal):
         tx = self._co.functions.deposit().buildTransaction({
             "value": self._w3.toWei(str(amount), 'ether'),
-            "nonce": self._w3.eth.getTransactionCount(addr),
+            "nonce": self._w3.eth.get_transaction_count(addr),
             "from": addr})
 
         signed_tx = self._w3.eth.account.sign_transaction(tx, priv_key)
-        tx_hash = self._w3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        tx_hash = self._w3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
         if tx_hash is not None:
-            tx_rcpt = self._w3.eth.waitForTransactionReceipt(tx_hash, timeout=30)
+            tx_rcpt = self._w3.eth.wait_for_transaction_receipt(tx_hash, timeout=30)
             res = self._co.events.DepositMade().processReceipt(tx_rcpt)
             if len(res) > 0 and res[0].event == "DepositMade":
                 return EthTxProcessResult.OK
