@@ -45,15 +45,36 @@ def get_subscriber(db: Session, subscriber_id: str):
 
 
 def add_subscription(db: Session, subscriber: models.Subscriber, subscription: models.Subscription):
-    created_Date = datetime.now()
     db_subscriber_subscription = models.SubscriberSuscription(created_date=datetime.now(),
                                                               courses_limit=subscription.course_limit,
-                                                              price=subscription.price,
-                                                              payment_status=constants.PaymentStatus.PAYMENT_PENDING,
-                                                              payment_due_date=created_Date + timedelta(
-                                                                  days=constants.DAYS_TO_REMORSE))
+                                                              price=subscription.price)
     db_subscriber_subscription.subscription = subscription
     subscriber.subscriptions.append(db_subscriber_subscription)
     db.commit()
     db.refresh(subscriber)
     return subscriber
+
+
+def create_course_student(db: Session,
+                          db_course: models.Course,
+                          db_subscriber: models.Subscriber,
+                          db_subscription: models.SubscriberSuscription):
+    created_date = datetime.now()
+    course_student = models.CourseStudent(subscriber_id=db_subscriber.subscriber_id,
+                                          course_id=db_course.course_id,
+                                          payment_status=constants.PaymentStatus.PAYMENT_PENDING,
+                                          price=db_subscription.price / db_subscription.courses_limit,
+                                          created_date=created_date,
+                                          payment_due_date=created_date + timedelta(days=1))
+    db.add(course_student)
+    db_subscription.courses_used += 1
+    db.commit()
+    db.refresh(db_course)
+    return db_course
+
+
+def get_student(db, db_subscriber: models.Subscriber, db_course: models.Course):
+    student = db.query(models.CourseStudent).filter(
+        models.CourseStudent.course_id == db_course.course_id,
+        models.CourseStudent.subscriber_id == db_subscriber.subscriber_id).first()
+    return student

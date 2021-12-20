@@ -39,6 +39,26 @@ class Course(BaseModelDb):
     owner_id = Column(String, ForeignKey("subscriber.subscriber_id"), nullable=False)
     subscription_code = Column(String, ForeignKey("subscription.code"), nullable=False)
     subscription = relationship("Subscription")
+    students = relationship("CourseStudent", cascade="all, delete", lazy="joined", back_populates="course")
+
+
+class CourseStudent(BaseModelDb):
+    __tablename__ = "course_student"
+    __table_args__ = (
+        CheckConstraint('payment_due_date > created_date', name='subscriber_suscription_payment_due_date_check'),
+    )
+
+    subscriber_id = Column(ForeignKey("subscriber.subscriber_id"), primary_key=True)
+    subscriber = relationship("Subscriber")
+    course_id = Column(ForeignKey("course.course_id"), primary_key=True)
+    course = relationship("Course", back_populates="students")
+    payment_status = Column(String,
+                            nullable=False,
+                            default="PENDING")
+    price = Column(Numeric(precision=21, scale=18), nullable=False, default=0)
+    created_date = Column(DateTime, nullable=False)
+    payment_due_date = Column(DateTime, nullable=False)
+    payment_collected_date = Column(DateTime, nullable=True)
 
 
 class Subscriber(BaseModelDb):
@@ -53,9 +73,6 @@ class Subscriber(BaseModelDb):
 
 class SubscriberSuscription(BaseModelDb):
     __tablename__ = "subscriber_suscription"
-    __table_args__ = (
-        CheckConstraint('payment_due_date > created_date', name='subscriber_suscription_payment_due_date_check'),
-    )
 
     id = Column(Integer, primary_key=True)
     subscriber_id = Column(ForeignKey("subscriber.subscriber_id"), nullable=False)
@@ -63,10 +80,5 @@ class SubscriberSuscription(BaseModelDb):
     created_date = Column(DateTime, nullable=False)
     courses_limit = Column(Integer, nullable=False)
     courses_used = Column(Integer, nullable=False, default=0)
-    payment_status = Column(String,
-                            nullable=True,
-                            default="PENDING")
-    price = Column(Numeric(precision=21, scale=18), nullable=True, default=0)
-    payment_due_date = Column(DateTime, nullable=True)
-
+    price = Column(Numeric(precision=21, scale=18), nullable=False)
     subscription = relationship("Subscription")

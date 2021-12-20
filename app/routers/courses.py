@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app import schemas
 from app.db import crud
 from app.dependencies import get_db
+from app.services import subscriptionService
 
 router = APIRouter(
     prefix="/courses",
@@ -33,3 +34,26 @@ def get_course(course_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404)
 
     return db_course
+
+
+@router.post("/{course_id}/subscribeStudent", response_model=schemas.Course)
+def create_course_subscription(course_id: str,
+                               student_subscription: schemas.SubscribeStudent,
+                               db: Session = Depends(get_db)):
+    db_course = crud.get_course(db, course_id=course_id)
+    if not db_course:
+        raise HTTPException(status_code=404, detail="Course Not Found")
+
+    db_subscriber = crud.get_subscriber(db, subscriber_id=student_subscription.subscriber_id)
+    if not db_subscriber:
+        raise HTTPException(status_code=404, detail="SubscriberNotFound")
+
+    db_sub_subs = subscriptionService.get_subscription_to_consume(db, db_subscriber, db_course.subscription)
+    if not db_sub_subs:
+        raise HTTPException(status_code=404, detail="No active subscription")
+
+    db_student = crud.get_student(db, db_subscriber, db_course)
+    if db_student:
+        raise HTTPException(status_code=422, detail="Student already enrolled")
+
+    return crud.create_course_student(db, db_course, db_subscriber, db_sub_subs)

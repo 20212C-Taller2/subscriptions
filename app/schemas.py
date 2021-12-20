@@ -66,3 +66,7 @@ class Subscriber(SubscriberReturn):
 
     class Config:
         orm_mode = True
+
+
+class SubscribeStudent(BaseModel):
+    subscriber_id: str
