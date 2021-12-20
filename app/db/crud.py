@@ -65,7 +65,8 @@ def create_course_student(db: Session,
                                           payment_status=constants.PaymentStatus.PAYMENT_PENDING,
                                           price=db_subscription.price / db_subscription.courses_limit,
                                           created_date=created_date,
-                                          payment_due_date=created_date + timedelta(days=1))
+                                          payment_due_date=created_date + timedelta(days=1),
+                                          subscriber_suscription_id=db_subscription.id)
     db.add(course_student)
     db_subscription.courses_used += 1
     db.commit()
@@ -73,8 +74,15 @@ def create_course_student(db: Session,
     return db_course
 
 
-def get_student(db, db_subscriber: models.Subscriber, db_course: models.Course):
+def get_student(db, db_subscriber: models.Subscriber, db_course: models.Course) -> models.CourseStudent:
     student = db.query(models.CourseStudent).filter(
         models.CourseStudent.course_id == db_course.course_id,
         models.CourseStudent.subscriber_id == db_subscriber.subscriber_id).first()
     return student
+
+
+def delete_course_student(db: Session,
+                          db_student: models.CourseStudent):
+    db_student.subscriber_subscription.courses_used -= 1
+    db.delete(db_student)
+    db.commit()

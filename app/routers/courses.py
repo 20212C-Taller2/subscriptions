@@ -1,3 +1,5 @@
+import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -57,3 +59,25 @@ def create_course_subscription(course_id: str,
         raise HTTPException(status_code=422, detail="Student already enrolled")
 
     return crud.create_course_student(db, db_course, db_subscriber, db_sub_subs)
+
+
+@router.delete("/{course_id}/subscribeStudent")
+def delete_course_subscription(course_id: str,
+                               student_subscription: schemas.SubscribeStudent,
+                               db: Session = Depends(get_db)):
+    db_course = crud.get_course(db, course_id=course_id)
+    if not db_course:
+        raise HTTPException(status_code=404, detail="Course Not Found")
+
+    db_subscriber = crud.get_subscriber(db, subscriber_id=student_subscription.subscriber_id)
+    if not db_subscriber:
+        raise HTTPException(status_code=404, detail="SubscriberNotFound")
+
+    db_student = crud.get_student(db, db_subscriber, db_course)
+    if not db_student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    if db_student.payment_due_date <= datetime.datetime.now():
+        raise HTTPException(status_code=422, detail="Remorse time passed")
+
+    return crud.delete_course_student(db, db_student)

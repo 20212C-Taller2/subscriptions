@@ -59,6 +59,8 @@ class CourseStudent(BaseModelDb):
     created_date = Column(DateTime, nullable=False)
     payment_due_date = Column(DateTime, nullable=False)
     payment_collected_date = Column(DateTime, nullable=True)
+    subscriber_suscription_id = Column(ForeignKey("subscriber_suscription.id"), nullable=True)
+    subscriber_subscription = relationship("SubscriberSuscription")
 
 
 class Subscriber(BaseModelDb):
