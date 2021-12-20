@@ -61,15 +61,15 @@ def create_course_subscription(course_id: str,
     return crud.create_course_student(db, db_course, db_subscriber, db_sub_subs)
 
 
-@router.delete("/{course_id}/subscribeStudent")
+@router.delete("/{course_id}/subscribeStudent/{subscriber_id}")
 def delete_course_subscription(course_id: str,
-                               student_subscription: schemas.SubscribeStudent,
+                               subscriber_id: str,
                                db: Session = Depends(get_db)):
     db_course = crud.get_course(db, course_id=course_id)
     if not db_course:
         raise HTTPException(status_code=404, detail="Course Not Found")
 
-    db_subscriber = crud.get_subscriber(db, subscriber_id=student_subscription.subscriber_id)
+    db_subscriber = crud.get_subscriber(db, subscriber_id=subscriber_id)
     if not db_subscriber:
         raise HTTPException(status_code=404, detail="SubscriberNotFound")
 
