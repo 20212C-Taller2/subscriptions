@@ -5,7 +5,7 @@ from alembic.runtime import migration
 from sqlalchemy import engine, create_engine
 
 
-def check_current_head(alembic_cfg, connectable):
+def _check_current_head(alembic_cfg, connectable):
     # type: (config.Config, engine.Engine) -> bool
     directory = script.ScriptDirectory.from_config(alembic_cfg)
     with connectable.begin() as connection:
@@ -13,7 +13,7 @@ def check_current_head(alembic_cfg, connectable):
         return set(context.get_current_heads()) == set(directory.get_heads())
 
 
-def test_db():
+def test_db(client):
     def get_url():
         if os.environ.get("DATABASE_URL") is not None:
             uri = os.getenv("DATABASE_URL")  # or other relevant config var
@@ -28,4 +28,4 @@ def test_db():
         SQLALCHEMY_DATABASE_URL
     )
     cfg = config.Config("alembic.ini")
-    assert check_current_head(cfg, e)
+    assert _check_current_head(cfg, e)

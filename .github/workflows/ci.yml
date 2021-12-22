@@ -12,6 +12,7 @@ jobs:
       DATABASE_PASS: password
       DATABASE_URL: postgresql://postgres:password@localhost:5432/postgres
       FASTAPI_POSTGRESQL: postgresql://postgres:password@localhost:5432/postgres
+      TEST_FASTAPI_POSTGRESQL: postgresql://postgres:password@localhost:5432/postgres
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container

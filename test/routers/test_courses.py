@@ -1,18 +1,8 @@
-import random
-import string
-
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
-
-
-def test_create_retrieve_course():
+def test_create_retrieve_course(client, subscriber, basic_subscription):
     course_data = {
-        "course_id": ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16)),
-        "owner_id": "1",
-        "subscription_code": "BASIC"
+        "course_id": "course1",
+        "owner_id": subscriber.subscriber_id,
+        "subscription_code": basic_subscription.code
     }
 
     response = client.post("/courses/", json=course_data)
