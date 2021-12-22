@@ -4,6 +4,7 @@
 Requiere las siguientes variables de entorno: 
 ```shell
 export FASTAPI_POSTGRESQL=postgresql+psycopg2://user:pass@databaseurl/db
+export TEST_FASTAPI_POSTGRESQL=postgresql+psycopg2://user:pass@databaseurl/db
 ```
 
 ## Install
