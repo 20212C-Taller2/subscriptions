@@ -55,7 +55,7 @@ def create_course_subscription(course_id: str,
     if not db_subscriber:
         raise HTTPException(status_code=404, detail="SubscriberNotFound")
 
-    db_sub_subs = subscriptionService.get_subscription_to_consume(db, db_subscriber, db_course.basic_subscription)
+    db_sub_subs = subscriptionService.get_subscription_to_consume(db, db_subscriber, db_course.subscription)
     if not db_sub_subs:
         raise HTTPException(status_code=404, detail="No active subscription")
 
