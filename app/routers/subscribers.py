@@ -7,6 +7,7 @@ from app.dependencies import get_db
 from ..constants import EthTxProcessResult
 from ..schemas import SubscriberReturn
 from ..services import walletService, subscriptionService
+from ..services.walletService import WalletService
 
 router = APIRouter(
     prefix="/subscribers",
@@ -15,11 +16,11 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-wallet_service = walletService.WalletService()
-
 
 @router.post("/", response_model=schemas.SubscriberReturn)
-def create_subscriber(subscriber: schemas.SubscriberCreate, db: Session = Depends(get_db)):
+def create_subscriber(subscriber: schemas.SubscriberCreate,
+                      db: Session = Depends(get_db),
+                      wallet_service: WalletService = Depends(walletService.WalletService)):
     db_subscriber = crud.get_subscriber(db, subscriber_id=subscriber.subscriber_id)
     if db_subscriber:
         raise HTTPException(status_code=400, detail="Subscriber already registered")
@@ -33,7 +34,9 @@ def create_subscriber(subscriber: schemas.SubscriberCreate, db: Session = Depend
 
 
 @router.get("/{subscriber_id}", response_model=schemas.SubscriberReturn)
-def get_subscriber(subscriber_id: str, db: Session = Depends(get_db)):
+def get_subscriber(subscriber_id: str,
+                   db: Session = Depends(get_db),
+                   wallet_service: WalletService = Depends(walletService.WalletService)):
     db_subscriber = crud.get_subscriber(db, subscriber_id=subscriber_id)
     if not db_subscriber:
         raise HTTPException(status_code=404)
@@ -46,7 +49,8 @@ def get_subscriber(subscriber_id: str, db: Session = Depends(get_db)):
 @router.post("/{subscriber_id}/subscription", response_model=schemas.SubscriberReturn)
 def add_subscription(subscriber_id: str,
                      subscription: schemas.SubscriberSubscriptionCreate,
-                     db: Session = Depends(get_db)):
+                     db: Session = Depends(get_db),
+                     wallet_service: WalletService = Depends(walletService.WalletService)):
     db_subscriber = crud.get_subscriber(db, subscriber_id=subscriber_id)
     if not db_subscriber:
         raise HTTPException(status_code=404, detail="Subscriber not found")
