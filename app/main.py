@@ -1,4 +1,6 @@
+import logging
 import subprocess
+import sys
 
 from fastapi import FastAPI
 
@@ -13,6 +15,8 @@ subprocess.run(
     ],
     stdout=subprocess.DEVNULL,
 )
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 app = FastAPI()
 app.include_router(subscriptions.router)

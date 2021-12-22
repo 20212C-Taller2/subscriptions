@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from web3 import Web3
 
-from ..constants import WEB3_INFURA_PROJECT_ID, CONTRACT_DIR, EthTxProcessResult
+from ..constants import WEB3_INFURA_PROJECT_ID, CONTRACT_DIR, EthTxProcessResult, CONTRACT_OWNER_ADDR, CONTRACT_OWNER_PK
 
 
 class WalletService:
@@ -49,6 +49,24 @@ class WalletService:
             tx_rcpt = self._w3.eth.wait_for_transaction_receipt(tx_hash, timeout=30)
             res = self._co.events.DepositMade().processReceipt(tx_rcpt)
             if len(res) > 0 and res[0].event == "DepositMade":
+                return EthTxProcessResult.OK
+            else:
+                return EthTxProcessResult.ERROR
+        else:
+            raise ValueError("tx_hash not returned by eth api call")
+
+    def send_payment(self, addr: str, amount: Decimal):
+        tx = self._co.functions.sendPayment(addr, Web3.toWei(amount, "ether")).buildTransaction({
+            "nonce": self._w3.eth.get_transaction_count(CONTRACT_OWNER_ADDR),
+            "from": CONTRACT_OWNER_ADDR})
+
+        signed_tx = self._w3.eth.account.sign_transaction(tx, CONTRACT_OWNER_PK)
+        tx_hash = self._w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+
+        if tx_hash is not None:
+            tx_rcpt = self._w3.eth.wait_for_transaction_receipt(tx_hash, timeout=30)
+            res = self._co.events.PaymentMade().processReceipt(tx_rcpt)
+            if len(res) > 0 and res[0].event == "PaymentMade":
                 return EthTxProcessResult.OK
             else:
                 return EthTxProcessResult.ERROR

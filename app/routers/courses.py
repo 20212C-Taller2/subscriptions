@@ -1,12 +1,15 @@
 import datetime
+import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 
-from app import schemas
+from app import schemas, constants
 from app.db import crud
+from app.db.models import CourseStudent
 from app.dependencies import get_db
 from app.services import subscriptionService
+from app.services.walletService import WalletService
 
 router = APIRouter(
     prefix="/courses",
@@ -14,6 +17,8 @@ router = APIRouter(
     dependencies=[],
     responses={404: {"description": "Not found"}},
 )
+
+_walletService = WalletService()
 
 
 @router.post("/", response_model=schemas.Course)
@@ -59,6 +64,34 @@ def create_course_subscription(course_id: str,
         raise HTTPException(status_code=422, detail="Student already enrolled")
 
     return crud.create_course_student(db, db_course, db_subscriber, db_sub_subs)
+
+
+@router.post("/processPayments")
+async def process_payments(background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    background_tasks.add_task(do_process_payments, db)
+    return {"message": "Payment process started"}
+
+
+def do_process_payments(db):
+    logging.info("Payment Process Started")
+    now = datetime.datetime.now()
+    payments_to_process = db.query(CourseStudent).filter(
+        CourseStudent.payment_due_date <= now,
+        CourseStudent.payment_status == constants.PaymentStatus.PAYMENT_PENDING).with_for_update().all()
+    for payment in payments_to_process:
+        try:
+            res = _walletService.send_payment(payment.subscriber.address, payment.price)
+            if res == constants.EthTxProcessResult.OK:
+                payment.payment_status = constants.PaymentStatus.PAYMENT_ACCEPTED
+                payment.payment_collected_date = datetime.datetime.now()
+            else:
+                logging.error(f"Failed to process payment for course {payment.course_id} and subscriber "
+                              f"{payment.subscriber_id}")
+        except Exception as e:
+            logging.error(f"Unable to process payment for course {payment.course_id} and subscriber "
+                          f"{payment.subscriber_id} with error {e}")
+    logging.info(f"Payment Process Finished: {len(payments_to_process)} records processed")
+    db.commit()
 
 
 @router.delete("/{course_id}/subscribeStudent/{subscriber_id}")
