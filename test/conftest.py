@@ -25,6 +25,8 @@ def client():
     BaseModelDb.metadata.drop_all(bind=engine)
     BaseModelDb.metadata.create_all(bind=engine)
 
+    app.dependency_overrides = {}
+
     def override_get_db():
         try:
             db = TestingSessionLocal()
