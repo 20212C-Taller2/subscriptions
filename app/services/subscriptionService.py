@@ -18,11 +18,16 @@ def group_subscriptions(subscriber: schemas.SubscriberReturn) -> schemas.Subscri
     subs = sorted(subscriber.subscriptions, key=order_func)
 
     for key, value in itertools.groupby(subs, key=order_func):
+        c_limit = 0
+        c_used = 0
+        for x in value:
+            c_limit += x.courses_limit
+            c_used += x.courses_used
         subscriptions.append(
             {
                 "subscription_code": key,
-                "courses_limit": sum([x.courses_limit for x in value]),
-                "courses_used": sum([x.courses_used for x in value])
+                "courses_limit": c_limit,
+                "courses_used": c_used
             }
         )
 
